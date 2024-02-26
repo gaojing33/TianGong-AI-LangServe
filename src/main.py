@@ -1,13 +1,12 @@
 import os
-
 from dotenv import load_dotenv
 from fastapi import Body, Depends, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from langchain.chat_models import ChatOpenAI
 from langserve import add_routes
 from pydantic import BaseModel, validator
-
 from src.agents.agent import openai_agent
+from src.agents.automobile_esg_agent import auto_esg_agent
 
 load_dotenv()
 
@@ -50,7 +49,7 @@ app = FastAPI(
 )
 
 model = ChatOpenAI(
-    model="gpt-4-1106-preview",
+    model="gpt-4-turbo-preview",
     temperature=0,
     streaming=True,
 )
@@ -69,6 +68,13 @@ add_routes(
     output_type=OutputModel,
 )
 
+add_routes(
+    app,
+    auto_esg_agent(),
+    path="/automobile_esg_agent",
+    input_type=InputModel,
+    output_type=OutputModel,
+)
 
 if __name__ == "__main__":
     import uvicorn
