@@ -1,7 +1,6 @@
 import json
 import os
 from typing import Optional
-
 from dotenv import load_dotenv
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
@@ -11,7 +10,6 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.tools import BaseTool
 from openai import OpenAI
 from xata.client import XataClient
-
 from src.tools.common.function_calling import function_calling
 
 load_dotenv()
@@ -22,9 +20,7 @@ llm_model = os.getenv("OPENAI_MODEL")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 langchain_verbose = os.getenv("LANGCHAIN_VERBOSE", "False") == "True"
 xata = XataClient(api_key=xata_api_key, db_url=xata_db_url)
-
 client = OpenAI(api_key=openai_api_key)
-
 
 class SearchESG(BaseTool):
     name = "search_ESG_tool"
@@ -44,7 +40,7 @@ class SearchESG(BaseTool):
                     "type": "string",
                 },
                 "corporate": {
-                    "description": "Corporate Name or Corporate extracted for a Xata database semantic search, MUST be in short name",
+                    "description": "Corporate Name extracted for a Xata database semantic search, MUST be in short name",
                     "type": "string",
                     "enum": [
                         "Apple",
@@ -71,7 +67,7 @@ class SearchESG(BaseTool):
             ]
         )
 
-        model_name = "gpt-4"
+        model_name = "gpt-4-turbo-preview"
 
         query_response = function_calling(
             function_desc, function_para, prompt, model_name, query
@@ -127,23 +123,23 @@ class SearchESG(BaseTool):
             "type": "object",
             "properties": {
                 "query": {
-                    "description": "The queries extracted for a Xata database semantic search",
+                    "description": "Generate a semantic search query that is tailored for retrieving specific information from ESG reports. The query should be focused, precise, and relevant to the user input, enabling effective and comprehensive search results in the context of ESG reporting standards and practices.",
                     "type": "string",
                 },
-                "corporate": {
-                    "description": "Corporate Name or Corporate extracted for a Xata database semantic search, MUST be in short name",
-                    "type": "string",
-                    "enum": [
-                        "Apple",
-                        "Tesla",
-                        "Toyota",
-                        "BYD",
-                    ],
-                },
-                "created_at": {
-                    "description": 'Date extracted for a Xata database semantic search, in MongoDB\'s query and projection operators, in format like {"$gte": 1609459200.0, "$lte": 1640908800.0}',
-                    "type": "string",
-                },
+                # "corporate": {
+                #     "description": "Corporate Name extracted for a Xata database semantic search, MUST be in short name",
+                #     "type": "string",
+                #     "enum": [
+                #         "Apple",
+                #         "Tesla",
+                #         "Toyota",
+                #         "BYD",
+                #     ],
+                # },
+                # "created_at": {
+                #     "description": 'Date extracted for a Xata database semantic search, in MongoDB\'s query and projection operators, in format like {"$gte": 1609459200.0, "$lte": 1640908800.0}',
+                #     "type": "string",
+                # },
             },
             "required": ["query"],
         }
@@ -158,7 +154,7 @@ class SearchESG(BaseTool):
             ]
         )
 
-        model_name = "gpt-4"
+        model_name = "gpt-4-turbo-preview"
 
         query_response = function_calling(
             function_desc, function_para, prompt, model_name, query
@@ -167,25 +163,25 @@ class SearchESG(BaseTool):
         query_response = json.loads(query_response)
         query = query_response.get("query")
 
-        try:
-            corporate = query_response.get("corporate", None)
-        except TypeError:
-            corporate = None
+        # try:
+        #     corporate = query_response.get("corporate", None)
+        # except TypeError:
+        #     corporate = None
 
-        filters = {}
+        # filters = {}
 
-        if corporate:
-            search_reportid = xata.data().query(
-                "ESG_Reports",
-                {
-                    "columns": ["id"],
-                    "filter": {
-                        "companyShortName": corporate,
-                    },
-                },
-            )
-            report_ids = [item["id"] for item in search_reportid["records"]]
-            filters = {"reportId": {"$any": report_ids}}
+        # if corporate:
+        #     search_reportid = xata.data().query(
+        #         "ESG_Reports",
+        #         {
+        #             "columns": ["id"],
+        #             "filter": {
+        #                 "companyShortName": corporate,
+        #             },
+        #         },
+        #     )
+        #     report_ids = [item["id"] for item in search_reportid["records"]]
+        #     filters = {"reportId": {"$any": report_ids}}
 
         response = client.embeddings.create(input=query, model="text-embedding-ada-002")
         vector = response.data[0].embedding
@@ -195,8 +191,8 @@ class SearchESG(BaseTool):
             {
                 "queryVector": vector,
                 "column": "vector",
-                "size": 10,
-                "filter": filters,
+                "size": 5,
+                "filter": {"reportId":"rec_cm1ro2eq2mhohok8sg20"},
             },
         )
 
