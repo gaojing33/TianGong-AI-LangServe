@@ -20,7 +20,6 @@ from src.tools.search_esg import SearchESG
 
 load_dotenv()
 
-
 def init_chat_history(session_id: str) -> BaseChatMessageHistory:
     xata_api_key = os.getenv("XATA_API_KEY")
     xata_db_url = os.getenv("XATA_DB_URL")
@@ -33,15 +32,14 @@ def init_chat_history(session_id: str) -> BaseChatMessageHistory:
         table_name=xata_table_name,
     )
 
-
 def openai_agent():
     # lc_tools = [SearchInternet(), SearchVectorDB(), SearchLCADB(), SearchESG()]
-    lc_tools = [SearchESG(), SearchInternet()]
+    lc_tools = [SearchESG()]
     oai_tools = [format_tool_to_openai_tool(tool) for tool in lc_tools]
 
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are a helpful assistant"),
+            ("system", "You are recognized as an authority on Environmental, Social, and Governance (ESG) issues. Your expertise encompasses comprehensive insights and detailed knowledge on sustainability, corporate social responsibility, ethical practices, and the environmental impacts of businesses. In your responses, commence with a succinct summary or overview of the topic. Subsequently, elaborate on the critical elements, offering an in-depth exploration or analysis of each key point."),
             MessagesPlaceholder(variable_name="history"),
             ("human", "{input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -50,7 +48,7 @@ def openai_agent():
 
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4-1106-preview",
+        model="gpt-4-turbo-preview",
     )
 
     agent = (
