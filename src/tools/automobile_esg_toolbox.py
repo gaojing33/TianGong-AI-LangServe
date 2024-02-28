@@ -12,7 +12,7 @@ client = OpenAI(api_key=openai_api_key)
 
 
 class AutoESGCheck(BaseTool):
-    name = "ESG Compliance Summarizer"
+    name = "ESG_Compliance_Summarizer"
     description = "Analyzes and summarizes Environmental, Social, and Governance (ESG) compliance information from provided texts, presenting the findings in Markdown format."
 
     def _run(self, upstream_outputs: str) -> str:

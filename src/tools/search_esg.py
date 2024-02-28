@@ -104,7 +104,7 @@ class SearchESG(BaseTool):
             {
                 "queryVector": vector,
                 "column": "vector",
-                "size": 10,
+                "size": 5,
                 "filter": filters,
             },
         )
@@ -123,7 +123,7 @@ class SearchESG(BaseTool):
             "type": "object",
             "properties": {
                 "query": {
-                    "description": "Generate a semantic search query that is tailored for retrieving specific information from ESG reports. The query should be focused, precise, and relevant to the user input, enabling effective and comprehensive search results in the context of ESG reporting standards and practices.",
+                    "description": "Create a semantic search query designed to extract detailed information from Environmental, Social, and Governance (ESG) reports. The query must be succinct and directly related to the user's needs, ensuring it effectively mines for data within the frameworks and norms of ESG reporting.",
                     "type": "string",
                 },
                 # "corporate": {
@@ -148,7 +148,7 @@ class SearchESG(BaseTool):
             [
                 (
                     "system",
-                    "You are a world class algorithm for extracting the queries and filters for a Xata database semantic search. Make sure to answer in the correct structured format",
+                    "You are a world class algorithm for extracting the queries and filters for a Xata database semantic search. Ensure your response adheres to the specified structured format.",
                 ),
                 ("human", "{input}"),
             ]
@@ -192,8 +192,8 @@ class SearchESG(BaseTool):
                 "queryVector": vector,
                 "column": "vector",
                 "size": 5,
-                "filter": {"reportId":"rec_cm1ro2eq2mhohok8sg20"},
-            },
+                "filter": {"reportId":"rec_cm1rtg6kh3h5unh5dv70"},
+            },      
         )
 
         result_list = [item["text"] for item in result["records"]]

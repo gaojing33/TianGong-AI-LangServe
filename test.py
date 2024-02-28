@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from xata.client import XataClient
 import re
 from typing import Optional, Type
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,

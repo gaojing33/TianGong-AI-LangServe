@@ -5,8 +5,7 @@ from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
-
-from langchain.tools import BaseTool, DuckDuckGoSearchResults
+from langchain_community.tools import BaseTool, DuckDuckGoSearchResults
 from pydantic import BaseModel
 
 
